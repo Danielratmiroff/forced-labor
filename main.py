@@ -1,3 +1,5 @@
+from winsound import PlaySound
+from gtts import gTTS
 import face_recognition
 import time
 import os
@@ -26,6 +28,7 @@ class FaceRecognition:
     known_face_encodings = []
     known_face_names = []
     process_current_frame = True
+    sound_dir = 'sounds'
 
     def __init__(self):
         print('Encoding faces...')
@@ -40,28 +43,47 @@ class FaceRecognition:
             self.known_face_names.append(image)
         print(f'Images: {self.known_face_names}')
 
+    def play_hello_sound(self):
+        print('Saying hello...')
+        PlaySound(f'{self.sound_dir}/hello.wav', 0)
+
+    def play_bye_sound(self):
+        print('Saying goodbye...')
+        PlaySound(f'{self.sound_dir}/seeyousoon.wav', 0)
+        time.sleep(5)
+        self.run_recognition()
+
     def run_recognition(self):
         print('Starting face recognition...')
         video_capture = cv2.VideoCapture(0)
+
+        # Video optimizations
+        video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 64)
+        video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 64)
+        video_capture.set(cv2.CAP_PROP_FPS, 30)
 
         if not video_capture.isOpened():
             sys.exit('Video source not found')
 
         pomodoro_timer = time.time()
+        self.found_face = False
+        self.greetings = False
 
         while True:
             ret, frame = video_capture.read()
 
+            if not ret:
+                return
+
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
             if self.process_current_frame:
-                small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-                # change colors to rgb
-                rgb_small_frame = small_frame[:, :, ::-1]
 
                 # Find all faces
                 self.face_locations = face_recognition.face_locations(
-                    rgb_small_frame)
+                    rgb_frame)
                 self.face_encodings = face_recognition.face_encodings(
-                    rgb_small_frame, self.face_locations)
+                    rgb_frame, self.face_locations)
 
                 self.face_names = []
 
@@ -84,29 +106,35 @@ class FaceRecognition:
 
                     self.face_names.append(f'{name} ({confidence})')
 
-            # Face is not detected
-            if len(self.face_names) == 0:
-                print(
-                    f'Faces: {self.face_names} {time.time() - pomodoro_timer}')
+                if len(self.face_names) > 0 and self.found_face == False:
+                    print('Face detected')
+                    self.found_face = True
+
+                    if self.greetings == False:
+                        self.greetings = True
+                        self.play_hello_sound()
+                # Face is no longer detected
+                elif len(self.face_names) == 0 and time.time() - pomodoro_timer > 5 and self.found_face == True:
+                    print('Face not detected')
+                    self.greetings = False
+                    self.found_face = False
+                    self.play_bye_sound()
+                    break
 
             # Only process every second frame
             self.process_current_frame = not self.process_current_frame
 
             # Display annotations
             for (top, right, bottom, left), name in zip(self.face_locations, self.face_names):
-                top *= 4
-                right *= 4
-                bottom *= 4
-                left *= 4
-
-                cv2.rectangle(frame, (left, top),
+                # Draw the rectangle on the frame
+                cv2.rectangle(rgb_frame, (left, top),
                               (right, bottom), (0, 0, 255), 2)
-                cv2.rectangle(frame, (left, bottom - 35),
+                cv2.rectangle(rgb_frame, (left, bottom - 15),
                               (right, bottom), (0, 0, 255), -1)
-                cv2.putText(frame, name, (left + 6, bottom - 6),
-                            cv2.FONT_HERSHEY_DUPLEX, 0.8, (255, 255, 255), 1)
+                cv2.putText(rgb_frame, name, (left + 6, bottom - 6),
+                            cv2.FONT_HERSHEY_DUPLEX, 0.4, (255, 255, 255), 1)
 
-            cv2.imshow('Face recognition', frame)
+            cv2.imshow('Face recognition', rgb_frame)
 
             if cv2.waitKey(1) == ord('q'):
                 break
