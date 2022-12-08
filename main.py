@@ -8,6 +8,8 @@ import cv2
 import numpy as np
 import math
 
+sound_dir = 'sounds/'
+
 
 def face_confidence(face_distance, face_match_threshold=0.6):
     range = (1.0 - face_match_threshold)
@@ -28,7 +30,6 @@ class FaceRecognition:
     known_face_encodings = []
     known_face_names = []
     process_current_frame = True
-    sound_dir = 'sounds'
 
     def __init__(self):
         print('Encoding faces...')
@@ -42,16 +43,6 @@ class FaceRecognition:
             self.known_face_encodings.append(face_encoding)
             self.known_face_names.append(image)
         print(f'Images: {self.known_face_names}')
-
-    def play_hello_sound(self):
-        print('Saying hello...')
-        PlaySound(f'{self.sound_dir}/hello.wav', 0)
-
-    def play_bye_sound(self):
-        print('Saying goodbye...')
-        PlaySound(f'{self.sound_dir}/seeyousoon.wav', 0)
-        time.sleep(5)
-        self.run_recognition()
 
     def run_recognition(self):
         print('Starting face recognition...')
@@ -112,14 +103,15 @@ class FaceRecognition:
 
                     if self.greetings == False:
                         self.greetings = True
-                        self.play_hello_sound()
+                        PlaySound(f'{sound_dir}hello.wav', 0)
+
                 # Face is no longer detected
                 elif len(self.face_names) == 0 and time.time() - pomodoro_timer > 5 and self.found_face == True:
                     print('Face not detected')
                     self.greetings = False
                     self.found_face = False
-                    self.play_bye_sound()
-                    break
+                    PlaySound(f'{sound_dir}seeyousoon.wav', 0)
+                    time.sleep(5)
 
             # Only process every second frame
             self.process_current_frame = not self.process_current_frame
