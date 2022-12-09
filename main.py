@@ -1,5 +1,4 @@
 from winsound import PlaySound
-from gtts import gTTS
 import face_recognition
 import time
 import os
@@ -7,8 +6,7 @@ import sys
 import cv2
 import numpy as np
 import math
-
-sound_dir = 'sounds/'
+import pyttsx3
 
 
 def face_confidence(face_distance, face_match_threshold=0.6):
@@ -23,6 +21,18 @@ def face_confidence(face_distance, face_match_threshold=0.6):
         return str(round(value, 2)) + "%"
 
 
+def calculate_time(time_passed):
+    minutes = time_passed / 60
+    hours = minutes / 60
+
+    if hours > 1:
+        return f'{round(hours)} hours'
+    elif minutes > 1:
+        return f'{round(minutes)} minutes'
+    else:
+        return f'{round(time_passed)} seconds'
+
+
 class FaceRecognition:
     face_recognition = []
     face_encodings = []
@@ -35,6 +45,13 @@ class FaceRecognition:
         print('Encoding faces...')
         self.encode_faces()
 
+        self.init_speech_engine()
+
+    def init_speech_engine(self):
+        self.engine = pyttsx3.init()
+        self.engine.setProperty('language', 'en')
+        self.engine.setProperty('rate', '80')
+
     def encode_faces(self):
         for image in os.listdir('faces'):
             face_image = face_recognition.load_image_file(f'faces/{image}')
@@ -45,6 +62,11 @@ class FaceRecognition:
         print(f'Images: {self.known_face_names}')
 
     def run_recognition(self):
+        sound_dir = 'sounds/'
+        pomodoro_timer = 0
+        found_face = False
+        greetings = False
+
         print('Starting face recognition...')
         video_capture = cv2.VideoCapture(0)
 
@@ -55,10 +77,6 @@ class FaceRecognition:
 
         if not video_capture.isOpened():
             sys.exit('Video source not found')
-
-        pomodoro_timer = time.time()
-        self.found_face = False
-        self.greetings = False
 
         while True:
             ret, frame = video_capture.read()
@@ -97,20 +115,33 @@ class FaceRecognition:
 
                     self.face_names.append(f'{name} ({confidence})')
 
-                if len(self.face_names) > 0 and self.found_face == False:
-                    print('Face detected')
-                    self.found_face = True
+                time_passed = time.time() - pomodoro_timer
 
-                    if self.greetings == False:
-                        self.greetings = True
+                # Face is detected
+                if len(self.face_names) > 0 and found_face == False:
+                    print('Face detected')
+                    found_face = True
+                    pomodoro_timer = time.time()
+
+                    if greetings == False:
+                        greetings = True
                         PlaySound(f'{sound_dir}hello.wav', 0)
 
                 # Face is no longer detected
-                elif len(self.face_names) == 0 and time.time() - pomodoro_timer > 5 and self.found_face == True:
+                # TODO: take new photos to improve recognition
+                # TODO: maybe say if pomodoro is not done
+                elif len(self.face_names) == 0 and time_passed > 5 and found_face == True:
                     print('Face not detected')
-                    self.greetings = False
-                    self.found_face = False
+                    greetings = False
+                    found_face = False
+                    pomodoro_timer = 0
+
                     PlaySound(f'{sound_dir}seeyousoon.wav', 0)
+
+                    self.engine.say(
+                        f"Time in computer {calculate_time(time_passed)}")
+                    self.engine.runAndWait()
+
                     time.sleep(5)
 
             # Only process every second frame
