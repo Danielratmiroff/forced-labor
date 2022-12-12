@@ -33,7 +33,6 @@ python3 main.py
 ### Recognising you
 
 The program will need to take a couple of photos of you from different angles, for it to be able to recognise you.
-
 (_No worries, photos will not leave your project's folder so no need to comb your hair or anything_.)
 
 You can, however, skip this step and just upload your good-looking photos to the _faces_ folder.
@@ -52,7 +51,6 @@ You can, however, skip this step and just upload your good-looking photos to the
 
 I do enjoy tracking my screen session times, 
 
-I usually run some sort of timer to do so, 
-having that automated with computer vision proved beneficial since I no longer need to remember to start nor end any session.
+I usually run some sort of timer to do so, having that automated with computer vision proved beneficial since I no longer need to remember to start nor end any session.
 
 Plus, it is funny to be greeted by my computer when it sees me 😊
