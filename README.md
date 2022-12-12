@@ -5,8 +5,6 @@
 
 A face recognition software that tells you long you have been in front of your computer
 
-[Source code](https://github.com/Danielratmiroff/watch-my-time) ![Github](https://raw.githubusercontent.com/Danielratmiroff/myblog/master/images/linkicon.svg)
-
 **What does it do?**
 
 - Uses your camara to keep an eye on you _(spoooky)_
