@@ -42,6 +42,9 @@ You can, on the other hand, skip this step and just upload your good-looking pho
 - It will wait for you to get back to start your next session 👋
 - Have a fun productive day!
 
+### Preview
+![Screenshot](https://raw.githubusercontent.com/Danielratmiroff/myblog/master/images/watchmytime/screenshot.jpg
+
 ## Outro
 
 I do enjoy tracking my screen session times, I usually run some sort of timer to do so, having that automated with computer vision proved beneficial since I no longer need to remember to start nor end any session.
