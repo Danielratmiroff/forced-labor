@@ -15,9 +15,12 @@ A face recognition software that tells you long you have been in front of your c
 - Waits for you to get back to work
 - Times your working session
 
-## How to use?
+## Requirements
 
-First of all, you need to have python3 and pip3 installed in your system.
+- python3
+- pip3
+
+## How to use?
 
 I would recommend using a python virtual environment to avoid any dependencies conflict. [How to create a python virtual env](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)
 
