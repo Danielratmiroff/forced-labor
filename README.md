@@ -31,10 +31,9 @@ python3 main.py
 ### Recognising you
 
 The program will need to take a couple of photos of you from different angles, for it to be able to recognise you.
-
 _No worries, photos will not leave your project's folder so no need to comb your hair or anything_.
 
-You can, on the other hand, skip this step and just upload your good-looking photos to the _faces_ folder.
+You can, however, skip this step and just upload your good-looking photos to the _faces_ folder.
 
 ### What now?
 
