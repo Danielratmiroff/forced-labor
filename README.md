@@ -1,8 +1,7 @@
+## Overview
 ![Computer Vision](https://img.shields.io/badge/AI-99-green)
 ![Spy](https://img.shields.io/badge/Spy-100-blue)
 ![Cute voice](https://img.shields.io/badge/Cute%20voice-35-red)
-
-## Overview
 
 A face recognition software that tells you long you have been in front of your computer
 
