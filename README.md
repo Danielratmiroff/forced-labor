@@ -43,7 +43,7 @@ You can, on the other hand, skip this step and just upload your good-looking pho
 - Have a fun productive day!
 
 ### Preview
-![Screenshot](https://raw.githubusercontent.com/Danielratmiroff/myblog/master/images/watchmytime/screenshot.jpg
+![Screenshot](https://raw.githubusercontent.com/Danielratmiroff/myblog/master/images/watchmytime/screenshot.jpg)
 
 ## Outro
 
