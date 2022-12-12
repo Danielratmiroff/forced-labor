@@ -49,6 +49,7 @@ You can, however, skip this step and just upload your good-looking photos to the
 
 ## Outro
 
-I do enjoy tracking my screen session times, I usually run some sort of timer to do so, having that automated with computer vision proved beneficial since I no longer need to remember to start nor end any session.
+I do enjoy tracking my screen session times, I usually run some sort of timer to do so, 
+having that automated with computer vision proved beneficial since I no longer need to remember to start nor end any session.
 
 Plus, it is funny to be greeted by my computer when it sees me 😊
