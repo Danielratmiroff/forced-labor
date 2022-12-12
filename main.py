@@ -33,6 +33,44 @@ def calculate_time(time_passed):
         return f'{round(time_passed)} seconds'
 
 
+def load_photos():
+    print('Loading photos...')
+
+    face_photos = len(os.listdir('faces'))
+    if face_photos >= 5:
+        return
+
+    print('Not enough photos, taking new ones...')
+
+    video_capture = cv2.VideoCapture(0)
+    if not video_capture.isOpened():
+        sys.exit('Video source not found')
+
+    while face_photos < 5:
+        ret, frame = video_capture.read()
+        if not ret:
+            sys.exit('Could not read frame')
+
+        cv2.putText(frame, 'Press "S" to take photo', (150, 50),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+
+        photo_text = f'Photos: {face_photos}'
+        cv2.putText(frame, photo_text, (150, 80),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+
+        cv2.imshow('Photoshoot - Press "q" to Quit', frame)
+
+        if cv2.waitKey(1) == ord('s'):
+            cv2.imwrite(f'faces/daniel{face_photos}.jpg', frame)
+            face_photos = len(os.listdir('faces'))
+
+        if cv2.waitKey(1) == ord('q'):
+            break
+
+    video_capture.release()
+    cv2.destroyAllWindows()
+
+
 class FaceRecognition:
     face_recognition = []
     face_encodings = []
@@ -44,7 +82,6 @@ class FaceRecognition:
     def __init__(self):
         print('Encoding faces...')
         self.encode_faces()
-
         self.init_speech_engine()
 
     def init_speech_engine(self):
@@ -54,12 +91,13 @@ class FaceRecognition:
 
     def encode_faces(self):
         for image in os.listdir('faces'):
+            print(f'> {image}')
             face_image = face_recognition.load_image_file(f'faces/{image}')
             face_encoding = face_recognition.face_encodings(face_image)[0]
 
             self.known_face_encodings.append(face_encoding)
             self.known_face_names.append(image)
-        print(f'Images: {self.known_face_names}')
+        print(f'Total photos: {len(self.known_face_names)}')
 
     def run_recognition(self):
         sound_dir = 'sounds/'
@@ -82,11 +120,11 @@ class FaceRecognition:
             ret, frame = video_capture.read()
 
             if not ret:
-                return
-
-            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                sys.exit('Could not read frame')
 
             if self.process_current_frame:
+
+                rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
                 # Find all faces
                 self.face_locations = face_recognition.face_locations(
@@ -128,8 +166,6 @@ class FaceRecognition:
                         PlaySound(f'{sound_dir}hello.wav', 0)
 
                 # Face is no longer detected
-                # TODO: take new photos to improve recognition
-                # TODO: maybe say if pomodoro is not done
                 elif len(self.face_names) == 0 and time_passed > 5 and found_face == True:
                     print('Face not detected')
                     greetings = False
@@ -157,7 +193,7 @@ class FaceRecognition:
                 cv2.putText(rgb_frame, name, (left + 6, bottom - 6),
                             cv2.FONT_HERSHEY_DUPLEX, 0.4, (255, 255, 255), 1)
 
-            cv2.imshow('Face recognition', rgb_frame)
+            cv2.imshow('Face recognition - Press "q" to Quit', rgb_frame)
 
             if cv2.waitKey(1) == ord('q'):
                 break
@@ -167,5 +203,6 @@ class FaceRecognition:
 
 
 if __name__ == '__main__':
+    load_photos()
     fr = FaceRecognition()
     fr.run_recognition()
